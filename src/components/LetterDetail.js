@@ -9,12 +9,14 @@ const LetterDetail = ({ letraData, onBack, onComplete }) => {
   const [showVideo, setShowVideo] = useState(false);
   const [showDinamica, setShowDinamica] = useState(false);
   const [dinamicaCompleted, setDinamicaCompleted] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
 
   useEffect(() => {
     generateTest();
     setShowVideo(false);
     setShowDinamica(false);
     setDinamicaCompleted(false);
+    setShowCelebration(false);
   }, [letraData]);
 
   const playFonema = () => {
@@ -64,10 +66,17 @@ const LetterDetail = ({ letraData, onBack, onComplete }) => {
   const handleDinamicaComplete = () => {
     setDinamicaCompleted(true);
     onComplete(letraData.letra);
+    setShowCelebration(true);
   };
 
-  // 🔽 Determinar fondo por sección
-  const fondo = showDinamica
+  const handleCloseCelebration = () => {
+    setShowCelebration(false);
+    onBack();
+  };
+
+  const fondo = showCelebration
+    ? '/image/premio.jpg'
+    : showDinamica
     ? '/image/p5.jpg'
     : showVideo
     ? '/image/p4.jpeg'
@@ -85,8 +94,8 @@ const LetterDetail = ({ letraData, onBack, onComplete }) => {
         Volver al Menú
       </button>
 
-      {/* VISTA PRINCIPAL */}
-      {!showVideo && !showDinamica && (
+      {/* Vista principal */}
+      {!showVideo && !showDinamica && !showCelebration && (
         <>
           <h1 className="text-8xl font-black text-red-600 mt-8 mb-4">{letraData.letra}</h1>
           <button
@@ -135,11 +144,10 @@ const LetterDetail = ({ letraData, onBack, onComplete }) => {
         </>
       )}
 
-      {/* VIDEO EDUCATIVO */}
+      {/* Video educativo */}
       {showVideo && (
         <div className="mt-12 w-full max-w-2xl">
           <h2 className="text-3xl font-bold text-blue-700 text-center mb-4">¡Mira este video!</h2>
-
           <video
             src={letraData.video}
             controls
@@ -150,22 +158,20 @@ const LetterDetail = ({ letraData, onBack, onComplete }) => {
           >
             Tu navegador no soporta este video.
           </video>
-
           <button
             onClick={handleVideoEnd}
             className="mt-4 bg-yellow-500 text-gray-800 px-6 py-3 rounded-lg shadow-md hover:bg-yellow-600 transition-colors mx-auto block"
           >
-            Saltar video (para prueba)
+            Saltar video
           </button>
         </div>
       )}
 
-      {/* DINÁMICA FINAL */}
-      {showDinamica && (
+      {/* Dinámica */}
+      {showDinamica && !showCelebration && (
         <div className="mt-12 text-center">
           <h2 className="text-3xl font-bold text-orange-700 mb-4">¡Es hora de jugar!</h2>
           <p className="text-2xl text-gray-800 mb-6">{letraData.dinamica}</p>
-
           <div className="bg-white p-8 rounded-lg shadow-lg border-4 border-orange-400">
             <img
               src={letraData.dinamicaimg}
@@ -173,7 +179,6 @@ const LetterDetail = ({ letraData, onBack, onComplete }) => {
               className="mx-auto max-w-full h-auto rounded-lg"
             />
           </div>
-
           <button
             onClick={handleDinamicaComplete}
             disabled={dinamicaCompleted}
@@ -182,6 +187,25 @@ const LetterDetail = ({ letraData, onBack, onComplete }) => {
             }`}
           >
             {dinamicaCompleted ? '¡Completado!' : 'Completar Dinámica'}
+          </button>
+        </div>
+      )}
+
+      {/* Celebración final */}
+      {showCelebration && (
+        <div className="mt-12 text-center">
+          <h2 className="text-5xl font-black text-green-600 animate-pulse">¡Felicidades!</h2>
+          <p className="text-3xl text-gray-800 mt-4">¡Has completado la letra "{letraData.letra}"!</p>
+          <img
+            src="/image/trofeo.png"
+            alt="Premio"
+            className="mt-8 mx-auto animate-bounce"
+          />
+          <button
+            onClick={handleCloseCelebration}
+            className="mt-8 px-8 py-4 bg-blue-500 text-white text-2xl font-bold rounded-full shadow-lg hover:bg-blue-600 transition-colors"
+          >
+            Continuar Aprendiendo
           </button>
         </div>
       )}
